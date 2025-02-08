@@ -31,6 +31,18 @@ class QuartoGame{
         return result;
     }
 
+    getEmptySquares(){
+        let emptySquares = [];
+        for(let y=0; y<this.boardPieces.length; y++){
+            for(let x=0; x<this.boardPieces[0].length; x++){
+                if(this.boardPieces[y][x] < 0){
+                    emptySquares.push(createVector(x, y));
+                }
+            }
+        }
+        return emptySquares;
+    }
+
     getHistory(){
 
     }

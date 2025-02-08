@@ -2,26 +2,22 @@ class QuartoManager{
     constructor(agent1, agent2){
         this.agent1 = agent1;
         this.agent2 = agent2;
-        this.activeAgent = agent1;
+        this.firstInit = true;
 
-
-        this.gameState = QuartoGameStates.SelectPiece;
-
-        // Registered values, for async passing of player agent values
-        this.registeredPiece  = null;
-        this.registeredSquare = null;
-
-        if(!this.agent1isAI || this.agent2isAI){
+        if(!this.agentIsAI(agent1) || !this.agentIsAI(agent2)){
             this.display = new QuartoBoard(
                 createVector(100, 100),
                 4, 
-                230
+                140
             );
         } else {
             const padding = 50;
             this.display = new PromptDisplay(
                 createVector(padding, padding),
-                createVector(windowWidth - padding * 2, windowHeight - padding * 2)
+                createVector(windowWidth - padding * 2, windowHeight - padding * 2),
+                125,
+                25,
+                16
             );
         }
 
@@ -31,7 +27,28 @@ class QuartoManager{
     init(){
         this.agent1.registerManager(this);
         this.agent2.registerManager(this);
+        // Registered values, for async passing of player agent values
+        this.registeredPiece  = null;
+        this.registeredSquare = null;
+        
+        this.gameState = QuartoGameStates.SelectPiece;
+
+        this.activeAgent = this.agent2;
+
         this.game = new QuartoGame();
+        //Pause required on first initialization to ensure DOM loading properly.
+        if(this.firstInit){
+            setTimeout(() => {
+                this.firstInit = false;
+                this.gamePhaseSelectPiece();
+            }, 500);
+        } else {
+            this.gamePhaseSelectPiece();
+        }
+    }
+
+    log(s){
+        this.display.log(s);
     }
 
     swapTurn(){this.activeAgent = this.activeAgent == this.agent1 ? this.agent2 : this.agent1;}
@@ -49,7 +66,7 @@ class QuartoManager{
     gamePhaseSelectPiece(){
         let pieceSelectSuccess = false;
         if(this.agentIsAI(this.activeAgent)){
-            piece = this.activeAgent.choosePiece(this.game);
+            const piece = this.activeAgent.choosePiece(this.game);
             pieceSelectSuccess = this.game.selectPiece(piece);
         } else if (this.registeredPiece != null) {
             pieceSelectSuccess = this.game.selectPiece(this.registeredPiece);
@@ -100,7 +117,20 @@ class QuartoManager{
     }
 
     gameEnd(){
-        console.log("GAME FINSIHED");
+        console.log("GAME END");
+        let message = "Game over! Player ";
+        if(this.activeAgent == this.agent1){message += "1";}
+        else{message += "2";}
+        message += " wins!";
+        this.log(message);
+        if(!this.agentIsAI(this.agent1) || !this.agentIsAI(this.agent2)){
+            //Wait 2.5 seconds before starting new game
+            setTimeout(() => {
+                this.init();
+            }, 2500);
+        } else {
+            this.init();
+        }
     }
 
     click(mousePos){

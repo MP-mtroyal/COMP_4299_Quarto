@@ -1,11 +1,11 @@
 class PromptDisplay{
-    constructor(pos, size){
+    constructor(pos, size, lineSize=80, maxLines=20, fontSize=32){
         this.pos   = createVector(pos.x, pos.y);
         this.size  = createVector(size.x, size.y);
         this.lines = [];
-        this.maxLines = 20;
-        this.lineSize = 80;
-        this.fontSize = 32;
+        this.maxLines = maxLines;
+        this.lineSize = lineSize;
+        this.fontSize = fontSize;
         this.lineSpacing = this.fontSize * 1.5;
         this.bgColor = color(0, 0, 0);
         this.textColor = color(75, 255, 100);

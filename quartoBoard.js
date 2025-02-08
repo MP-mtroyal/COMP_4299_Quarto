@@ -25,6 +25,14 @@ class QuartoBoard{
             }
             this.squarePositions.push(row);
         }
+        let promptPos = createVector(this.pos.x + this.squareSize * (this.boardSize + 2.65), this.pos.y);
+        this.prompt = new PromptDisplay(
+            promptPos,
+            createVector(windowWidth - promptPos.x - 50, this.squareSize * this.boardSize),
+            40,
+            20,
+            16
+        );
     }
 
     moveHighlightedPiece(game){
@@ -48,6 +56,7 @@ class QuartoBoard{
     }
 
     render(pos, game){
+        this.prompt.render();
         this.renderRemPieceHighlight(pos, game);
         //======= Render Board ===========
         let spacing = 50;
@@ -196,6 +205,10 @@ class QuartoBoard{
             val = Math.floor(val / 2);
         }
         return s;
+    }
+
+    log(s){
+        this.prompt.log(s);
     }
 }
 

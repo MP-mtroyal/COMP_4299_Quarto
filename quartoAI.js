@@ -4,6 +4,7 @@ class QuartoAI{
     }
 
     registerManager(mngr){this.mngr = mngr;}
+    log(s){this.mngr.log(s);}
 
     choosePiece(game){
 
