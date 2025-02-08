@@ -1,3 +1,8 @@
+/*  QuartoGame
+The skelton of a quarto game. Contains information about the game state
+As well as methods for retrieving game data safely. 
+Logs history as a series of moves at indices, so game can be repeated.
+*/
 class QuartoGame{
     constructor(size=4){
         this.size = createVector(size, size);
@@ -24,13 +29,14 @@ class QuartoGame{
             }
         }
     }
-
+    //Returns an integer array of pieces avaliable to be picked from.
     getRemainingPieces(){
         let result = [];
         for(let i=0; i<this.remainingPieces.length; i++){result.push(this.remainingPieces[i]);}
         return result;
     }
 
+    //Returns an array of p5.vector2d corrisponding to empty squares on the board.
     getEmptySquares(){
         let emptySquares = [];
         for(let y=0; y<this.boardPieces.length; y++){
@@ -43,32 +49,25 @@ class QuartoGame{
         return emptySquares;
     }
 
+    //Retrieves game history as a string.
+    // format is as follows
+    // pieceValue,xIndex,yIndex \n
+    //TODO: Implement this.
     getHistory(){
 
     }
-
+    //Stores a piece placement in history.
     logHistory(x, y, piece){
         this.history.push([x,y,piece])
     }
 
-    pieceIsSelected(){return this.selectPiece != null;}
+    pieceIsSelected()  {return this.selectPiece != null;}
+    pieceAtIndex(x, y) {return this.boardPieces[y][x];}
+    render(pos)        {this.display.render(pos, this);}
+    click(pos)         {this.display.click(pos, this);}
 
-    pieceAtIndex(x, y){
-        return this.boardPieces[y][x];
-    }
-
-    render(pos){
-        if(this.shouldRender){
-            this.display.render(pos, this);
-        }
-    }
-
-    click(pos){
-        if (this.shouldRender){
-            this.display.click(pos, this);
-        }
-    }
-
+    //Checks if the current board contains a winning state
+    //checks rows, columns and diagonals for a 2D board, regardless of how many features
     checkWin(){
         for (let i=0; i<this.size.y; i++){
             if(this.checkFeatureList(this.boardPieces[i])){
@@ -96,6 +95,7 @@ class QuartoGame{
         return false;
     }
 
+    //Checks a list of features for any win condition.
     checkFeatureList(feats){
         //list has empty element
         if (feats.indexOf(-1) >= 0){return false;}
@@ -108,6 +108,9 @@ class QuartoGame{
         return andCmp > 0 || orCmp - (Math.pow(2, this.size.x) - 1) != 0;
     }
 
+    //If a piece is avaliable to be selected, selects this piece and removes it 
+    //from remaining pieces.
+    //Returns boolean true if successful, false if not
     selectPiece(piece){
         let index = this.remainingPieces.indexOf(piece);
         if(index < 0){
@@ -119,6 +122,7 @@ class QuartoGame{
         return true;
     }
 
+    //Clears the selected piece, adding it back into the remaining pieces if required.
     clearSelectedPiece(){
         //If selected piece is not null, add it back to remaining pieces before selecting new one
         if(this.selectedPiece != null){
@@ -128,6 +132,9 @@ class QuartoGame{
     }
     getSelectedPiece(){return this.selectedPiece;}
 
+    //Places currently selected piece at given index, if possible.
+    //logs event in history.
+    //Returns boolean true if successful, false if not
     placeSelectedPiece(x, y){
         if(this.selectedPiece == null){return false;}
         if(x < 0 || x >= this.size.x){
